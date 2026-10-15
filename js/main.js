@@ -334,7 +334,7 @@
           `).join('')}
         </div>
       </div>
-      ${waveDivider('#070F1E', false)}
+      ${waveDivider('#F0F8FF', false)}
     `;
   }
 
@@ -2127,7 +2127,7 @@
     const dismiss = () => {
       overlay.classList.add('dismissed');
       setTimeout(() => {
-        try { overlay.remove(); } catch (e) {}
+        try { overlay.remove(); } catch (e) { }
       }, 450);
     };
 
