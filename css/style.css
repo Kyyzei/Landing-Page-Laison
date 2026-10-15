@@ -313,90 +313,161 @@ ul { list-style: none; }
 .reveal-delay-4 { transition-delay: 0.4s; }
 .reveal-delay-5 { transition-delay: 0.5s; }
 
-/* ─── NAVIGATION (DYNAMIC FLOATING GLASS CAPSULE) ─────────── */
+/* ─── NAVIGATION (PERMANENT LIQUID HYDRODYNAMIC CAPSULE) ──── */
 #navbar {
   position: fixed;
-  top: 18px;
+  top: 14px;
   left: 0;
   right: 0;
   z-index: 1000;
   padding: 0 24px;
-  transition: top 0.45s cubic-bezier(0.16, 1, 0.3, 1),
-              padding 0.45s cubic-bezier(0.16, 1, 0.3, 1);
   pointer-events: none;
+  transition: top 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+              padding 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: top;
 }
+
+#navbar.scrolled {
+  top: 10px;
+}
+
 .nav-inner {
-  max-width: 1240px;
+  position: relative;
+  max-width: 1220px;
   margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 66px;
-  padding: 0 16px 0 22px;
+  height: 60px;
+  padding: 0 16px 0 20px;
   border-radius: var(--radius-full);
-  background: rgba(255, 255, 255, 0.80);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(255, 255, 255, 0.92);
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(18px) saturate(150%);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.95);
   box-shadow:
-    0 8px 24px -4px rgba(15, 35, 75, 0.06),
-    0 2px 6px rgba(0, 0, 0, 0.02);
+    0 8px 26px -4px rgba(15, 35, 75, 0.06),
+    0 1px 3px rgba(0, 0, 0, 0.02);
   transition:
-    max-width 0.45s cubic-bezier(0.16, 1, 0.3, 1),
-    height 0.45s cubic-bezier(0.16, 1, 0.3, 1),
-    padding 0.45s cubic-bezier(0.16, 1, 0.3, 1),
-    background 0.35s ease,
-    border-color 0.35s ease,
-    box-shadow 0.45s cubic-bezier(0.16, 1, 0.3, 1),
-    transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+    background 0.4s ease,
+    border-color 0.4s ease,
+    box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   pointer-events: auto;
-  position: relative;
   overflow: hidden;
 }
 
-/* ─── DYNAMIC SCROLLED STATE (CONDENSED FLOATING PILL) ─────── */
-#navbar.scrolled {
-  top: 10px;
-}
-#navbar.scrolled .nav-inner {
-  max-width: 1040px;
-  height: 54px;
-  padding: 0 10px 0 18px;
-  background: rgba(255, 255, 255, 0.94);
-  border-color: rgba(203, 213, 225, 0.85);
-  box-shadow:
-    0 16px 38px -6px rgba(15, 35, 75, 0.14),
-    0 2px 8px rgba(0, 0, 0, 0.04);
+/* Ambient hydrodynamic shimmer top-edge line */
+.nav-inner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 4%;
+  right: 4%;
+  height: 1.5px;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(0, 229, 255, 0.45) 20%, 
+    rgba(29, 100, 236, 0.85) 50%, 
+    rgba(0, 229, 255, 0.45) 80%, 
+    transparent 100%);
+  background-size: 200% 100%;
+  animation: nav-water-shimmer 6s linear infinite;
+  pointer-events: none;
+  opacity: 0.6;
 }
 
-/* Subtle Reading Progress Indicator at Capsule Bottom */
-.nav-progress-bar {
+@keyframes nav-water-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Interactive cursor spotlight shimmer */
+.nav-liquid-shimmer {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-full);
+  pointer-events: none;
+  background: radial-gradient(450px circle at var(--mouse-x, 50%) 50%, rgba(0, 229, 255, 0.10), transparent 60%);
+  opacity: 0.8;
+  transition: opacity 0.3s ease;
+}
+
+/* ─── DYNAMIC SCROLLED STATE (HYDRODYNAMIC ELEVATION) ──────── */
+#navbar.scrolled .nav-inner {
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  border-color: rgba(186, 230, 253, 0.95);
+  box-shadow:
+    0 16px 40px -8px rgba(15, 35, 75, 0.12),
+    0 0 24px rgba(0, 229, 255, 0.14),
+    0 0 0 1px rgba(0, 229, 255, 0.18);
+}
+
+/* Fluid Buoyancy Elevation during active scrolling */
+#navbar.nav-scrolling .nav-inner {
+  transform: translateY(-1.5px);
+  box-shadow:
+    0 20px 48px -8px rgba(15, 35, 75, 0.16),
+    0 0 30px rgba(0, 229, 255, 0.22),
+    0 0 0 1px rgba(0, 229, 255, 0.25);
+}
+
+/* Dynamic Liquid Water Wave Progress Stream */
+.nav-progress-stream {
   position: absolute;
   bottom: 0;
-  left: 20px;
-  right: 20px;
-  height: 2px;
+  left: 18px;
+  right: 18px;
+  height: 2.5px;
   background: rgba(226, 232, 240, 0.45);
   border-radius: var(--radius-full);
-  overflow: hidden;
+  overflow: visible;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 0.35s ease;
+  transition: opacity 0.4s ease;
 }
-#navbar.scrolled .nav-progress-bar {
+#navbar.scrolled .nav-progress-stream {
   opacity: 1;
 }
-.nav-progress-fill {
+.nav-progress-wave-fill {
+  position: relative;
   height: 100%;
   width: 0%;
   background: linear-gradient(90deg, #1D64EC 0%, #00E5FF 100%);
   border-radius: var(--radius-full);
+  box-shadow: 0 0 10px rgba(0, 229, 255, 0.6);
   transition: width 0.08s linear;
 }
+.nav-progress-wave-highlight {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.7) 50%, transparent 100%);
+  background-size: 200% 100%;
+  animation: wave-water-flow 2.2s linear infinite;
+  border-radius: var(--radius-full);
+}
+@keyframes wave-water-flow {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+.nav-progress-droplet {
+  position: absolute;
+  right: -4px;
+  top: -3.5px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #00E5FF;
+  box-shadow: 0 0 10px #00E5FF, 0 0 18px rgba(0, 229, 255, 0.85);
+  animation: pulse-dot 1.4s ease-in-out infinite alternate;
+}
 
+/* Logo & Water Droplet Ripple */
 .nav-logo {
   font-family: var(--font-body);
-  font-size: 1.32rem;
+  font-size: 1.25rem;
   font-weight: 800;
   color: #0B192C;
   letter-spacing: -0.02em;
@@ -404,80 +475,99 @@ ul { list-style: none; }
   align-items: center;
   text-decoration: none;
   flex-shrink: 0;
-  transition: font-size 0.45s cubic-bezier(0.16, 1, 0.3, 1);
-}
-#navbar.scrolled .nav-logo {
-  font-size: 1.18rem;
 }
 .nav-logo .logo-icon {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 32px; height: 32px;
+  width: 30px; height: 30px;
   background: linear-gradient(135deg, #1D64EC 0%, #0284C7 100%);
-  border-radius: 9px;
+  border-radius: 8px;
   margin-right: 8px;
   vertical-align: middle;
   box-shadow: 0 4px 12px rgba(29, 100, 236, 0.25);
-  transition: width 0.45s cubic-bezier(0.16, 1, 0.3, 1),
-              height 0.45s cubic-bezier(0.16, 1, 0.3, 1),
-              border-radius 0.45s cubic-bezier(0.16, 1, 0.3, 1),
-              margin-right 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
 }
-#navbar.scrolled .nav-logo .logo-icon {
-  width: 27px; height: 27px;
-  border-radius: 7px;
-  margin-right: 7px;
+.nav-logo:hover .logo-icon,
+#navbar.nav-scrolling .nav-logo .logo-icon {
+  transform: scale(1.08) rotate(-3deg);
+  box-shadow: 0 6px 18px rgba(29, 100, 236, 0.4);
 }
-#navbar.scrolled .nav-logo .logo-icon svg {
-  width: 15px; height: 15px;
+.logo-ripple-ring {
+  position: absolute;
+  inset: -4px;
+  border-radius: 12px;
+  border: 1.5px solid rgba(0, 229, 255, 0.6);
+  opacity: 0;
+  transform: scale(0.85);
+  pointer-events: none;
+}
+.nav-logo:hover .logo-ripple-ring,
+#navbar.nav-scrolling .logo-ripple-ring {
+  opacity: 0.8;
+  animation: ripple-wave 1.6s ease-out infinite;
+}
+@keyframes ripple-wave {
+  0% { transform: scale(0.95); opacity: 0.8; }
+  100% { transform: scale(1.4); opacity: 0; }
 }
 .logo-os { color: #0284C7; }
 
-/* Dynamic Pill Nav Links */
+/* Dynamic Pill Nav Links & Sliding Indicator */
 .nav-links {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 2px;
-  background: rgba(241, 245, 249, 0.70);
-  border: 1px solid rgba(226, 232, 240, 0.70);
-  padding: 4px 6px;
+  background: rgba(241, 245, 249, 0.72);
+  border: 1px solid rgba(226, 232, 240, 0.75);
+  padding: 4px 5px;
   border-radius: var(--radius-full);
-  transition: all 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: background 0.35s ease, border-color 0.35s ease;
 }
 #navbar.scrolled .nav-links {
-  background: rgba(241, 245, 249, 0.85);
-  padding: 2px 4px;
+  background: rgba(241, 245, 249, 0.88);
 }
 .nav-links:hover {
-  background: rgba(241, 245, 249, 0.95);
+  background: rgba(241, 245, 249, 0.98);
+}
+.nav-indicator {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: #FFFFFF;
+  border-radius: var(--radius-full);
+  box-shadow: 0 2px 10px rgba(29, 100, 236, 0.16), 0 1px 3px rgba(15, 35, 75, 0.05);
+  pointer-events: none;
+  opacity: 0;
+  z-index: 1;
+  transform: translate3d(0, 0, 0);
+  transition:
+    transform 0.36s cubic-bezier(0.34, 1.56, 0.64, 1),
+    width 0.36s cubic-bezier(0.34, 1.56, 0.64, 1),
+    height 0.36s cubic-bezier(0.34, 1.56, 0.64, 1),
+    opacity 0.25s ease;
 }
 .nav-links a {
+  position: relative;
+  z-index: 2;
   color: #334155;
-  font-size: 0.88rem;
+  font-size: 0.86rem;
   font-weight: 600;
-  padding: 6px 14px;
+  padding: 6px 13px;
   border-radius: var(--radius-full);
-  transition: all 0.22s ease;
+  transition: color 0.2s ease;
   text-decoration: none;
   display: inline-block;
   line-height: 1.4;
   white-space: nowrap;
 }
-#navbar.scrolled .nav-links a {
-  padding: 5px 11px;
-  font-size: 0.83rem;
-}
-.nav-links a:hover {
-  color: #1D64EC;
-  background: #FFFFFF;
-  box-shadow: 0 2px 6px rgba(15, 35, 75, 0.05);
-}
-/* Active ScrollSpy Pill Highlight */
+.nav-links a:hover,
 .nav-links a.active {
   color: #1D64EC !important;
-  background: #FFFFFF !important;
-  box-shadow: 0 2px 8px rgba(29, 100, 236, 0.12);
+  background: transparent !important;
+  box-shadow: none !important;
   font-weight: 700;
 }
 .nav-links a:focus-visible {
@@ -485,43 +575,35 @@ ul { list-style: none; }
   outline-offset: 2px;
 }
 
-/* Nav Actions (Language & CTA) */
+/* Nav Actions (Live Telemetry Chip, Lang & CTA) */
 .nav-actions {
   display: flex;
   align-items: center;
   gap: 10px;
   flex-shrink: 0;
-  transition: gap 0.45s cubic-bezier(0.16, 1, 0.3, 1);
 }
-#navbar.scrolled .nav-actions {
-  gap: 8px;
-}
+
+
 
 /* Language Toggle */
 .lang-toggle {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  height: 38px;
-  min-width: 44px;
-  padding: 0 14px;
+  height: 36px;
+  min-width: 42px;
+  padding: 0 13px;
   border-radius: var(--radius-full);
   background: rgba(241, 245, 249, 0.85);
   border: 1px solid rgba(203, 213, 225, 0.8);
   color: #1E293B;
-  font-size: 0.82rem;
+  font-size: 0.80rem;
   font-weight: 700;
   letter-spacing: 0.04em;
   cursor: pointer;
-  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.25s ease;
   box-shadow: 0 1px 3px rgba(15, 35, 75, 0.04);
   line-height: 1;
-}
-#navbar.scrolled .lang-toggle {
-  height: 34px;
-  min-width: 38px;
-  padding: 0 11px;
-  font-size: 0.78rem;
 }
 .lang-toggle:hover {
   background: #FFFFFF;
@@ -539,29 +621,23 @@ ul { list-style: none; }
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  height: 38px;
-  padding: 0 22px;
+  height: 36px;
+  padding: 0 20px;
   border-radius: var(--radius-full);
   background: #1D64EC;
   color: #FFFFFF !important;
-  font-size: 0.86rem;
+  font-size: 0.85rem;
   font-weight: 700;
   letter-spacing: 0.015em;
   border: 1px solid #1D64EC;
   outline: none;
   box-shadow: 0 4px 14px rgba(29, 100, 236, 0.35);
-  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.25s ease;
   text-decoration: none;
   white-space: nowrap;
   overflow: hidden;
   line-height: 1;
   box-sizing: border-box;
-}
-#navbar.scrolled #nav-demo-btn {
-  height: 34px;
-  padding: 0 17px;
-  font-size: 0.82rem;
-  box-shadow: 0 3px 10px rgba(29, 100, 236, 0.3);
 }
 #nav-demo-btn::before {
   display: none !important;
@@ -584,17 +660,13 @@ ul { list-style: none; }
   justify-content: center;
   align-items: center;
   gap: 5px;
-  width: 38px;
-  height: 38px;
+  width: 36px;
+  height: 36px;
   background: rgba(241, 245, 249, 0.85);
   border: 1px solid rgba(203, 213, 225, 0.8);
   cursor: pointer;
   border-radius: var(--radius-full);
-  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-}
-#navbar.scrolled .hamburger {
-  width: 34px;
-  height: 34px;
+  transition: all 0.25s ease;
 }
 .hamburger:hover {
   background: #FFFFFF;

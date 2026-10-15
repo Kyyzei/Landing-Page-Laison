@@ -83,14 +83,17 @@
 
     navbar.innerHTML = `
       <div class="nav-inner">
+        <div class="nav-liquid-shimmer" aria-hidden="true"></div>
         <a href="#hero" class="nav-logo" aria-label="AquaLinkOS Home">
           <span class="logo-icon">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
               <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/>
             </svg>
+            <span class="logo-ripple-ring" aria-hidden="true"></span>
           </span>AquaLink<span class="logo-os">OS</span>
         </a>
         <nav class="nav-links" aria-label="Primary navigation">
+          <span class="nav-indicator" id="nav-indicator" aria-hidden="true"></span>
           ${navLinks.map(l => `<a href="${l.href}">${l.label}</a>`).join('')}
         </nav>
         <div class="nav-actions">
@@ -100,8 +103,11 @@
             <span></span><span></span><span></span>
           </button>
         </div>
-        <div class="nav-progress-bar" aria-hidden="true">
-          <div class="nav-progress-fill" id="nav-progress-fill"></div>
+        <div class="nav-progress-stream" aria-hidden="true">
+          <div class="nav-progress-wave-fill" id="nav-progress-fill">
+            <span class="nav-progress-wave-highlight"></span>
+            <span class="nav-progress-droplet"></span>
+          </div>
         </div>
       </div>
       <nav class="mobile-menu" id="mobile-menu" aria-label="Mobile navigation">
@@ -136,6 +142,71 @@
       const btn = $(sel);
       if (btn) btn.addEventListener('click', toggleLang);
     });
+
+    // Mouse movement spotlight for liquid shimmer
+    navbar.addEventListener('mousemove', (e) => {
+      const rect = navbar.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      navbar.style.setProperty('--mouse-x', `${x}px`);
+    }, { passive: true });
+
+    // Initialize the smooth sliding indicator
+    initNavIndicator();
+  }
+
+  /* ─── DYNAMIC SLIDING NAV INDICATOR ───────────────────────── */
+  function initNavIndicator() {
+    const navLinksContainer = $('.nav-links');
+    const indicator = $('#nav-indicator');
+    if (!navLinksContainer || !indicator) return;
+
+    const links = $$('a', navLinksContainer);
+    if (!links.length) return;
+
+    const positionIndicator = (targetLink) => {
+      if (!targetLink) {
+        indicator.style.opacity = '0';
+        return;
+      }
+      const cRect = navLinksContainer.getBoundingClientRect();
+      const lRect = targetLink.getBoundingClientRect();
+      const left = lRect.left - cRect.left;
+      const top = lRect.top - cRect.top;
+      const width = lRect.width;
+      const height = lRect.height;
+
+      indicator.style.opacity = '1';
+      indicator.style.transform = `translate3d(${left}px, ${top}px, 0)`;
+      indicator.style.width = `${width}px`;
+      indicator.style.height = `${height}px`;
+    };
+
+    links.forEach(link => {
+      link.addEventListener('mouseenter', () => positionIndicator(link));
+    });
+
+    navLinksContainer.addEventListener('mouseleave', () => {
+      const activeLink = $('a.active', navLinksContainer);
+      if (activeLink) {
+        positionIndicator(activeLink);
+      } else {
+        indicator.style.opacity = '0';
+      }
+    });
+
+    window.__updateNavIndicator = () => {
+      const activeLink = $('a.active', navLinksContainer);
+      if (activeLink) {
+        positionIndicator(activeLink);
+      } else {
+        indicator.style.opacity = '0';
+      }
+    };
+
+    // Position initially
+    setTimeout(() => {
+      if (window.__updateNavIndicator) window.__updateNavIndicator();
+    }, 100);
   }
 
   /* ─── BUILD HERO ──────────────────────────────────── */
@@ -2072,18 +2143,41 @@
     navbarScrollInitialized = true;
 
     let ticking = false;
+    let scrollTimer = null;
     const navbar = $('#navbar');
     const sections = ['#solution', '#platform', '#use-case', '#roadmap', '#about', '#contact'];
+
+    // Handle window resize to keep indicator aligned
+    window.addEventListener('resize', () => {
+      if (window.__updateNavIndicator) window.__updateNavIndicator();
+    }, { passive: true });
 
     const onScroll = () => {
       if (!ticking) {
         window.requestAnimationFrame(() => {
           const scrollY = window.scrollY;
-          const isScrolled = scrollY > 30;
 
+          // Active scrolling momentum class
           if (navbar) {
-            navbar.classList.toggle('scrolled', isScrolled);
+            navbar.classList.add('nav-scrolling');
+            clearTimeout(scrollTimer);
+            scrollTimer = setTimeout(() => {
+              navbar.classList.remove('nav-scrolling');
+            }, 140);
           }
+
+          // Scrolled state (for minimalist island morphing)
+          const isScrolled = scrollY > 35;
+          if (navbar) {
+            const wasScrolled = navbar.classList.contains('scrolled');
+            navbar.classList.toggle('scrolled', isScrolled);
+            navbar.classList.toggle('nav--at-top', !isScrolled);
+            if (wasScrolled !== isScrolled && window.__updateNavIndicator) {
+              setTimeout(window.__updateNavIndicator, 200);
+            }
+          }
+
+          // Scroll to top button visibility
           const scrollTopBtn = $('#scroll-top');
           if (scrollTopBtn) {
             scrollTopBtn.classList.toggle('visible', scrollY > 400);
@@ -2100,7 +2194,7 @@
           // Dynamic ScrollSpy
           let activeId = '';
           if (scrollY > 100) {
-            const scrollPos = scrollY + 160;
+            const scrollPos = scrollY + 180;
             sections.forEach(id => {
               const sec = $(id);
               if (sec && sec.offsetTop <= scrollPos) {
@@ -2109,9 +2203,17 @@
             });
           }
           if (navbar) {
+            let activeChanged = false;
             $$('.nav-links a', navbar).forEach(link => {
-              link.classList.toggle('active', link.getAttribute('href') === activeId);
+              const shouldBeActive = link.getAttribute('href') === activeId;
+              if (link.classList.contains('active') !== shouldBeActive) {
+                link.classList.toggle('active', shouldBeActive);
+                activeChanged = true;
+              }
             });
+            if (activeChanged && window.__updateNavIndicator) {
+              window.__updateNavIndicator();
+            }
           }
 
           ticking = false;
